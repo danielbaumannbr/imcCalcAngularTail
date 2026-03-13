@@ -228,3 +228,144 @@ Para conectar este código ao seu template `app.html`, você deve usar:
 
 ---
 
+Para ensinar essa aplicação do zero, vamos dividir o processo em **instalação**, **criação da estrutura** e **desenvolvimento da lógica**.
+
+---
+
+# 🚀 Passo a Passo: Criando sua Calculadora de IMC Standalone
+
+## 1. Preparação do Ambiente
+
+Antes de começar, você precisa ter o **Node.js** instalado.
+
+1. Abra o terminal e instale o Angular CLI:
+```bash
+npm install -g @angular/cli
+
+```
+
+
+2. Crie o projeto (estamos usando a versão mais recente, que é **Standalone** por padrão):
+```bash
+ng new calculo-imc --style=css --routing=true --ssr=false
+
+```
+
+
+3. Entre na pasta:
+```bash
+cd calculo-imc
+
+```
+
+
+
+---
+
+## 2. Entendendo a Estrutura Standalone
+
+No Angular moderno, não usamos mais o arquivo `app.module.ts`. O componente principal se autogerencia.
+
+### O arquivo `app.component.ts` (Lógica)
+
+Abra o arquivo `src/app/app.component.ts` (ou `app.ts` dependendo da sua versão) e substitua o código para importar as ferramentas necessárias:
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { FormsModule } from '@angular/forms'; // Habilita o ngModel
+import { CommonModule } from '@angular/common'; // Habilita o ngIf e Pipes
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, FormsModule, CommonModule],
+  templateUrl: './app.component.html', // Verifique se o nome é app.html ou app.component.html
+  styleUrl: './app.component.css'
+})
+export class AppComponent {
+  // Uso de Signals para o título (Reatividade moderna)
+  protected readonly title = signal('Calculadora IMC');
+
+  // Variáveis para armazenar os dados do usuário
+  peso: number = 0;
+  altura: number = 0;
+  resultado: number = 0;
+  classificacao: string = '';
+
+  calcularIMC() {
+    if (this.altura > 0 && this.peso > 0) {
+      // Cálculo matemático
+      this.resultado = this.peso / (this.altura * this.altura);
+
+      // Lógica de classificação
+      if (this.resultado < 18.5) this.classificacao = 'Abaixo do peso';
+      else if (this.resultado < 25) this.classificacao = 'Peso normal';
+      else if (this.resultado < 30) this.classificacao = 'Sobrepeso';
+      else if (this.resultado < 35) this.classificacao = 'Obesidade grau 1';
+      else if (this.resultado < 40) this.classificacao = 'Obesidade grau 2';
+      else this.classificacao = 'Obesidade grau 3';
+    }
+  }
+}
+
+```
+
+---
+
+## 3. Criando a Interface (Template)
+
+Abra o arquivo HTML correspondente (`app.component.html`) e conecte as variáveis.
+
+```html
+<div class="container">
+  <h1>{{ title() }}</h1>
+
+  <input type="number" [(ngModel)]="peso" placeholder="Peso (kg)">
+  <input type="number" [(ngModel)]="altura" placeholder="Altura (ex: 1.75)">
+
+  <button (click)="calcularIMC()">Calcular</button>
+
+  <div *ngIf="resultado > 0" class="resultado">
+    <p>Seu IMC: {{ resultado | number:'1.1-2' }}</p>
+    <p>Situação: <strong>{{ classificacao }}</strong></p>
+  </div>
+</div>
+
+```
+
+---
+
+## 4. Estilização Básica
+
+No arquivo `app.component.css`, adicione apenas o essencial para testar:
+
+```css
+.container { text-align: center; margin-top: 50px; font-family: Arial; }
+input { display: block; margin: 10px auto; padding: 10px; }
+button { padding: 10px 20px; cursor: pointer; background: blue; color: white; border: none; }
+.resultado { margin-top: 20px; padding: 15px; background: #f0f0f0; }
+
+```
+
+---
+
+## 5. Rodando a Aplicação
+
+Volte ao terminal e execute:
+
+```bash
+ng serve
+
+```
+
+Abra o navegador em `http://localhost:4200`.
+
+---
+
+### Resumo dos Conceitos Ensinados:
+
+* **Signals:** Gerenciamento de estado eficiente.
+* **FormsModule:** Captura de dados de inputs.
+* **CommonModule:** Lógica de exibição (`*ngIf`) e formatação (`number` pipe).
+* **Event Binding:** Ação disparada pelo clique do botão.
