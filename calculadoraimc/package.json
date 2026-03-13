@@ -4,9 +4,14 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --prod --base-href=/imcCalcAngularTail/",
+    "gh-pages": "angular-cli-ghpages --dir=dist/imcCalcAngularTail",
+    "deploy": "npm run build && npm run gh-pages",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "json-server": "json-server --watch db.json",
+    "json-server:routes": "json-server --watch db.json --routes routes.json"
+
   },
   "private": true,
   "packageManager": "npm@11.6.2",
